@@ -1,10 +1,18 @@
-const http = require('http');
-const app = require('./app');
+const express = require('express');
+const morgan = require('morgan');
+const path = require('path');
+const parser = require('body-parser');
 
-const port = process.env.PORT || 3000;
+const imageRoutes = require('../route/image');
 
-const server = http.createServer(app);
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-server.listen(port, function(){
-	console.log(`listening on ${port}...`);
-});
+app.use(parser.json());
+app.use(parser.urlencoded({extended: true}));
+app.use(express.static(path.join('../public/dist')));
+app.use(morgan('dev'));
+
+app.use('/image', imageRoutes);
+
+app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`));
